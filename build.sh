@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# exit on error and print each command
+set -e
+
+if [ -d ./build/install ]; then
+    rm -rf ./build/install
+fi
+
+cmake -B build -G Ninja \
+    -Dboost_DOWNLOAD_URL=https://gitee.com/AimRT/boost/releases/download/1.82.0/boost-1.82.0.tar.xz \
+    -Dasio_DOWNLOAD_URL=https://gitee.com/AimRT/asio/repository/archive/asio-1-30-2.zip \
+    -Dfmt_DOWNLOAD_URL=https://gitee.com/AimRT/fmt/repository/archive/10.2.1.zip \
+    -Dgflags_DOWNLOAD_URL=https://gitee.com/mirrors/gflags/repository/archive/v2.2.2.zip \
+    -Dgoogletest_DOWNLOAD_URL=https://gitee.com/mirrors/googletest/repository/archive/v1.13.0.zip \
+    -Dprotobuf_DOWNLOAD_URL=https://gitee.com/mirrors/protobufsource/repository/archive/v3.21.12.zip \
+    -Dyaml-cpp_DOWNLOAD_URL=https://gitee.com/mirrors/yaml-cpp/repository/archive/0.8.0.zip \
+    -Djsoncpp_DOWNLOAD_URL=https://gitee.com/AimRT/jsoncpp/repository/archive/1.9.6.zip \
+    -Dstdexec_DOWNLOAD_URL=https://gitee.com/AimRT/stdexec/repository/archive/nvhpc-23.09.rc4.zip \
+    -Dlibunifex_DOWNLOAD_URL=https://gitee.com/AimRT/libunifex/repository/archive/591ec09e7d51858ad05be979d4034574215f5971.zip \
+    -Dtbb_DOWNLOAD_URL=https://gitee.com/mirrors/tbb/repository/archive/v2021.13.0.zip \
+    -Dpybind11_DOWNLOAD_URL=https://gitee.com/mirrors/pybind11/repository/archive/v2.13.1.zip \
+    -Dpaho_mqtt_c_DOWNLOAD_URL=https://gitee.com/mirrors/paho.mqtt.c/repository/archive/v1.3.13.zip \
+    -Dnlohmann_json_DOWNLOAD_URL=https://gitee.com/AimRT/json/repository/archive/v3.11.3.zip \
+    -Dopentelemetry_proto_DOWNLOAD_URL=https://gitee.com/AimRT/opentelemetry-proto/repository/archive/v1.3.2.zip \
+    -Dopentelemetry_cpp_DOWNLOAD_URL=https://gitee.com/AimRT/opentelemetry-cpp/repository/archive/v1.16.1.zip \
+    -Dzenohc_DOWNLOAD_URL=https://gitee.com/AimRT/zenoh-c/repository/archive/1.0.0.11.zip \
+    -Dnghttp2_DOWNLOAD_URL=https://gitee.com/mirrors/nghttp2/repository/archive/v1.62.1.zip \
+    -Diceoryx_DOWNLOAD_URL=https://gitee.com/mirrors/iceoryx/repository/archive/v2.95.4.zip \
+    -Dcpptoml_DOWNLOAD_URL=https://gitee.com/AimRT/cpptoml/repository/archive/v0.1.0.zip \
+    -Dmcap_DOWNLOAD_URL=https://gitee.com/AimRT/mcap/repository/archive/releases/cpp/v2.0.0.zip \
+    -Dlz4_DOWNLOAD_URL=https://gitee.com/mirrors/LZ4_old1/repository/archive/v1.10.0.zip \
+    -Dzstd_DOWNLOAD_URL=https://gitee.com/mirrors/facebook-zstd/repository/archive/v1.5.7.zip\
+    -DCMAKE_INSTALL_PREFIX=./build/install\
+    -DAIMRT_BUILD_WITH_ROS2=ON\
+    -DAIMRT_BUILD_WITH_PROTOBUF=ON\
+    -DAIMRT_BUILD_ROS2_PLUGIN=ON\
+    -DAIMRT_BUILD_PROTOCOLS=ON\
+    $@
+
+cmake --build build --config Release --target install --parallel $(nproc)

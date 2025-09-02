@@ -1,0 +1,102 @@
+base_info:
+  project_name: template
+  build_mode_tags: []
+  aimrt_import_options:
+    AIMRT_BUILD_TESTS: "OFF"
+    AIMRT_BUILD_EXAMPLES: "OFF"
+    AIMRT_BUILD_DOCUMENT: "OFF"
+    AIMRT_BUILD_RUNTIME: "ON"
+    AIMRT_BUILD_PROTOCOLS: "ON"
+    AIMRT_BUILD_CLI_TOOLS: "OFF"
+    AIMRT_BUILD_WITH_PROTOBUF: "ON"
+    AIMRT_USE_LOCAL_PROTOC_COMPILER: "OFF"
+    AIMRT_USE_PROTOC_PYTHON_PLUGIN: "OFF"
+    AIMRT_BUILD_WITH_ROS2: "ON"
+    AIMRT_BUILD_NET_PLUGIN: "OFF"
+    AIMRT_BUILD_ROS2_PLUGIN: "ON"
+    AIMRT_BUILD_MQTT_PLUGIN: "OFF"
+    AIMRT_BUILD_ZENOH_PLUGIN: "OFF"
+    AIMRT_BUILD_ICEORYX_PLUGIN: "OFF"
+    
+# Module
+modules:
+  - name: pb_client_module
+  - name: pb_server_module
+  - name: ros2_client_module
+  - name: ros2_server_module
+
+# pkg 
+pkgs:
+  - name: rpc_pb_pkg
+    modules:
+      - name: pb_client_module
+        namespace: local
+      - name: pb_server_module
+        namespace: local
+  - name: rpc_ros2_pkg
+    modules:
+      - name: ros2_client_module
+        namespace: local
+      - name: ros2_server_module
+        namespace: local
+  - name: rpc_client_pkg
+    modules:
+      - name: pb_client_module
+        namespace: local
+      - name: ros2_client_module
+        namespace: local
+  - name: rpc_server_pkg
+    modules:
+      - name: pb_server_module
+        namespace: local
+      - name: ros2_server_module
+        namespace: local
+
+# 部署（.yaml，名称为[name]_[deploy_ins[name]]_cfg.yaml）
+# 例如下面pb部署模块的文件为：pb_rpc_cfg.yaml   
+deploy_modes:
+  - name: pb
+    deploy_ins:
+      - name: rpc
+        pkgs:
+          - name: rpc_pb_pkg
+  - name: ros2
+    deploy_ins:
+      - name: rpc
+        pkgs:
+          - name: rpc_ros2_pkg
+  - name: c_pb
+    deploy_ins:
+      - name: rpc
+        pkgs:
+          - name: rpc_client_pkg
+            options:
+              # disable_modules参数最好使用大驼峰风格
+              disable_modules: [Ros2ClientModule]
+  - name: c_ros2
+    deploy_ins:
+      - name: rpc
+        pkgs:
+          - name: rpc_client_pkg
+            options:
+              disable_modules: [PbClientModule]
+  - name: s_pb
+    deploy_ins:
+      - name: rpc
+        pkgs:
+          - name: rpc_server_pkg
+            options:
+              disable_modules: [Ros2ServerModule]
+  - name: s_ros2
+    deploy_ins:
+      - name: pkg
+        pkgs:
+          - name: rpc_server_pkg
+            options:
+              disable_modules: [PbServerModule]
+# 协议
+# protocols:
+#   - name: pb_proto
+#     type: protobuf
+#   - name: ros2_proto
+#     type: ros2

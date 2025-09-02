@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+// 命名空间
+package wkspace.protocols.example_pb;
+
+message RpcInfoReq {
+    uint64 time_stamp = 1;
+    string info = 2;
+}
+
+message RpcInfoRes {
+    uint64 req_stamp = 1;
+    uint64 res_stamp = 2;
+    string info = 3;
+}
+
+service RpcInfo {
+    rpc GetRpcInfo (RpcInfoReq) returns (RpcInfoRes);
+}
