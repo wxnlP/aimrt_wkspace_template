@@ -71,35 +71,3 @@ aimrt_cli gen -p config_template.yaml -o template
 ./change_workspace.sh ./template ~/aimrt_wkspace_template wkspace
 ```
 
-找到子项目的`CMakeLists.txt`，例如`src/template/CMakeLists.txt`，做如下修改：
-
-- 删除`install`（建议删除）
-- 修改`add_custom_target`依赖的工作空间和输出路径，在此之前需要定义几个固定变量
-
-![](https://tonmoon.obs.cn-east-3.myhuaweicloud.com/img/tonmoon/20250806155617761.png)
-
-修改内容：
-
-- 新增语法，放在`add_custom_target`前。
-
-```cmake
-string(REGEX REPLACE ".*/\(.*\)" "\\1" CUR_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-# 获取当前目录的父级命名空间（不含当前）
-get_namespace(CUR_SUPERIOR_NAMESPACE)
-# 将命名空间的 "::" 换成 "_"
-string(REPLACE "::" "_" CUR_SUPERIOR_NAMESPACE_UNDERLINE ${CUR_SUPERIOR_NAMESPACE})
-```
-
-- 修改语法，使用变量替换。
-
-```cmake
-# build all
-add_custom_target(  
-  ${CUR_SUPERIOR_NAMESPACE_UNDERLINE}_${CUR_DIR}_build_all ALL
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CUR_INSTALL_SOURCE_DIR}/bin ${CMAKE_BINARY_DIR}
-  DEPENDS aimrt::runtime::main
-          ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR}::pb_pkg
-          ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR}::ros2_pkg
-          ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR}::publisher_pkg
-          ${CUR_SUPERIOR_NAMESPACE}::${CUR_DIR}::subscriber_pkg)
-```

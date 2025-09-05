@@ -19,8 +19,8 @@ else
 fi
 
 if [[ "$3" != "-2" && "$3" != "-a" ]]; then
-    mv ${PJ_NAME}/src/* ${WK_SPACE}/src/${PJ_NAME}/
-    rm -rf ${PJ_NAME}
+    cp -r ${PJ_NAME}/src/* ${WK_SPACE}/src/${PJ_NAME}/
+    # rm -rf ${PJ_NAME}
     echo "完成文件转移."
 else
     echo "跳过文件转移!"
@@ -30,9 +30,16 @@ cd ${WK_SPACE}/src/${PJ_NAME}/
 sed -i "2s/set_root_namespace(\"${PJ_NAME}\")/set_namespace()/" CMakeLists.txt
 # 文本替换处理
 find "./module" -type f \( -name "*.cc" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
-  -exec sed -i.bak "s/${PJ_NAME}/${NAMESPACE}::${PJ_NAME}/g" {} +
+  -exec sed -i "s/${PJ_NAME}::/${NAMESPACE}::${PJ_NAME}::/g" {} +
 find "./pkg" -type f \( -name "*.cc" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
-  -exec sed -i.bak "s/${PJ_NAME}/${NAMESPACE}::${PJ_NAME}/g" {} +
+  -exec sed -i "s/${PJ_NAME}::/${NAMESPACE}::${PJ_NAME}::/g" {} +
+
+sed -i "s/${PJ_NAME}::/\${CUR_SUPERIOR_NAMESPACE}::\${CUR_DIR}::/g" CMakeLists.txt
+sed -i "s/${PJ_NAME}_build_all/\${CUR_SUPERIOR_NAMESPACE_UNDERLINE}_\${CUR_DIR}_build_all/g" CMakeLists.txt
+sed -i '/install(/,/USE_SOURCE_PERMISSIONS)/c\
+string(REGEX REPLACE ".*\\/\\(.*\\)" "\\\\1" CUR_DIR ${CMAKE_CURRENT_SOURCE_DIR})\
+get_namespace(CUR_SUPERIOR_NAMESPACE)\
+string(REPLACE "::" "_" CUR_SUPERIOR_NAMESPACE_UNDERLINE ${CUR_SUPERIOR_NAMESPACE})' CMakeLists.txt
 
 cd ../
 sed -i "\$a add_subdirectory(${PJ_NAME})" CMakeLists.txt
