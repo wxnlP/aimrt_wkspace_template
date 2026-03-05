@@ -64,10 +64,16 @@ cd tools
 aimrt_cli gen -p config_template.yaml -o template
 ```
 
-转移工作空间：
+将子项目添加到工作空间：
 
 ```bash
 # ./change_workspace.sh <子项目名称> <工作空间路径> <命名空间>
 ./change_workspace.sh ./template ~/aimrt_wkspace_template wkspace
+```
+
+同时，`change_workspace.sh` 提供跳过文件转移环节，这样可以方便手动添加 module：
+
+```bash
+./change_workspace.sh ./template ~/aimrt_wkspace_template wkspace --no_move
 ```
 
