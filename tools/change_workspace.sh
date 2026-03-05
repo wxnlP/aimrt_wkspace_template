@@ -1,6 +1,6 @@
 #!/bin/bash
 # 参数检查
-if [ $# -ne 3 ]; then
+if [[ $# -lt 3 || $# -gt 4 ]]; then
     echo "用法: $0 <项目名> <工作空间路径> <命名空间前缀>"
     exit 1
 fi
@@ -11,22 +11,16 @@ NAMESPACE=${3#./}
 
 echo "开始工作空间转移......"
 
-if [[ "$3" != "-1" && "$3" != "-a" ]]; then
-    mkdir -p ${WK_SPACE}/src/${PJ_NAME}
-    echo "完成工程目录创建."
-else
-    echo "跳过工程目录创建!"
-fi
 
-if [[ "$3" != "-2" && "$3" != "-a" ]]; then
-    cp -r ${PJ_NAME}/src/* ${WK_SPACE}/src/${PJ_NAME}/
-    # rm -rf ${PJ_NAME}
-    echo "完成文件转移."
-else
-    echo "跳过文件转移!"
-fi
+mkdir -p ${WK_SPACE}/src/${PJ_NAME}
+echo "完成工程目录创建."
 
-cd ${WK_SPACE}/src/${PJ_NAME}/
+
+cd ${WK_SPACE}/src
+sed -i "\$a add_subdirectory(${PJ_NAME})" CMakeLists.txt
+
+
+cd ${WK_SPACE}/tools/${PJ_NAME}/src
 sed -i "2s/set_root_namespace(\"${PJ_NAME}\")/set_namespace()/" CMakeLists.txt
 # 文本替换处理
 find "./module" -type f \( -name "*.cc" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
@@ -41,9 +35,15 @@ string(REGEX REPLACE ".*\\/\\(.*\\)" "\\\\1" CUR_DIR ${CMAKE_CURRENT_SOURCE_DIR}
 get_namespace(CUR_SUPERIOR_NAMESPACE)\
 string(REPLACE "::" "_" CUR_SUPERIOR_NAMESPACE_UNDERLINE ${CUR_SUPERIOR_NAMESPACE})' CMakeLists.txt
 
-cd ../
-sed -i "\$a add_subdirectory(${PJ_NAME})" CMakeLists.txt
-
 echo "完成CMake配置修改."
+
+if [ "$4" != "--no_move"]; then
+    cd ../../ 
+    cp -r ${PJ_NAME}/src/* ${WK_SPACE}/src/${PJ_NAME}/
+    # rm -rf ${PJ_NAME}
+    echo "完成文件转移."
+else
+    echo "跳过文件转移!"
+fi
 
 echo "完成工作空间转移."
