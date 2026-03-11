@@ -77,3 +77,13 @@ aimrt_cli gen -p config_template.yaml -o template
 ./change_workspace.sh ./template ~/aimrt_wkspace_template wkspace --no_move
 ```
 
+### 启动脚本使用
+
+`pkg_start.sh`提供可视化启动流程：
+
+1. `./pkg_start.sh <yaml配置文件名称>`（传统，麻烦）
+2. `./pkg_start.sh` + yaml文件选择（可视化，方便）
+
+使用效果：
+
+![](https://tonmoon.obs.cn-east-3.myhuaweicloud.com/img/tonmoon/20260311155610336.png)
